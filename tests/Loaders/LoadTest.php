@@ -7,7 +7,7 @@ use \Mockery;
 
 class LoadTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->laravelLoader = Mockery::mock(LaravelFileLoader::class);
@@ -15,7 +15,7 @@ class LoadTest extends TestCase
         $this->fileLoader = new FileLoader('en', $this->laravelLoader);
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         Mockery::close();
         parent::tearDown();
@@ -40,9 +40,11 @@ class LoadTest extends TestCase
             ],
         ];
         $expected = [
-            'simple'     => 'OverSimple',
-            'nested.one' => 'OverFirst',
-            'nested.two' => 'Second',
+            'simple' => 'OverSimple',
+            'nested' => [
+                'one' => 'OverFirst',
+                'two' => 'Second',
+            ],
         ];
         $this->laravelLoader->shouldReceive('load')->with('en', 'group', 'name')->andReturn($en);
         $this->laravelLoader->shouldReceive('load')->with('es', 'group', 'name')->andReturn($es);
@@ -50,7 +52,7 @@ class LoadTest extends TestCase
     }
 
     /**
-     *  @test
+     *  @testLoadTest
      */
     public function it_returns_translation_code_if_text_not_found()
     {

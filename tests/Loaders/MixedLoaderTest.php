@@ -8,7 +8,7 @@ use \Mockery;
 
 class MixedLoaderTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->fileLoader  = Mockery::mock(FileLoader::class);
@@ -16,7 +16,7 @@ class MixedLoaderTest extends TestCase
         $this->mixedLoader = new MixedLoader('en', $this->fileLoader, $this->dbLoader);
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         Mockery::close();
         parent::tearDown();
@@ -43,5 +43,15 @@ class MixedLoaderTest extends TestCase
         $this->fileLoader->shouldReceive('loadSource')->with('en', 'group', 'name')->andReturn($file);
         $this->dbLoader->shouldReceive('loadSource')->with('en', 'group', 'name')->andReturn($db);
         $this->assertEquals($expected, $this->mixedLoader->load('en', 'group', 'name'));
+    }
+
+    /**
+     * @test
+     */
+    public function it_cascades_namespaces()
+    {
+        $this->fileLoader->shouldReceive('addNamespace')->with('package', '/some/path/to/package')->andReturnNull();
+        $this->dbLoader->shouldReceive('addNamespace')->with('package', '/some/path/to/package')->andReturnNull();
+        $this->assertNull($this->mixedLoader->addNamespace('package', '/some/path/to/package'));
     }
 }

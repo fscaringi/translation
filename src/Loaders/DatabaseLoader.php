@@ -1,9 +1,9 @@
 <?php namespace Waavi\Translation\Loaders;
 
-use Illuminate\Translation\LoaderInterface;
+use Illuminate\Support\Arr;
 use Waavi\Translation\Repositories\TranslationRepository;
 
-class DatabaseLoader extends Loader implements LoaderInterface
+class DatabaseLoader extends Loader
 {
     /**
      *  The default locale.
@@ -39,12 +39,12 @@ class DatabaseLoader extends Loader implements LoaderInterface
      */
     public function loadSource($locale, $group, $namespace = '*')
     {
-        $result       = [];
-        $translations = $this->translationRepository->getItems($locale, $namespace, $group);
-        foreach ($translations as $translation) {
-            array_set($result, $translation['item'], $translation['text']);
+        $dotArray = $this->translationRepository->loadSource($locale, $namespace, $group);
+        $undot    = [];
+        foreach ($dotArray as $item => $text) {
+            Arr::set($undot, $item, $text);
         }
-        return $result;
+        return $undot;
     }
 
     /**
@@ -57,5 +57,26 @@ class DatabaseLoader extends Loader implements LoaderInterface
     public function addNamespace($namespace, $hint)
     {
         $this->hints[$namespace] = $hint;
+    }
+
+    /**
+     * Add a new JSON path to the loader.
+     *
+     * @param  string  $path
+     * @return void
+     */
+    public function addJsonPath($path)
+    {
+        //
+    }
+
+    /**
+     * Get an array of all the registered namespaces.
+     *
+     * @return array
+     */
+    public function namespaces()
+    {
+        return $this->hints;
     }
 }

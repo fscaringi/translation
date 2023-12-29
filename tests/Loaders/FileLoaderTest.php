@@ -7,14 +7,14 @@ use \Mockery;
 
 class FileLoaderTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->laravelLoader = Mockery::mock(LaravelFileLoader::class);
         $this->fileLoader    = new FileLoader('en', $this->laravelLoader);
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         Mockery::close();
         parent::tearDown();
@@ -32,12 +32,7 @@ class FileLoaderTest extends TestCase
                 'two' => 'Second',
             ],
         ];
-        $expected = [
-            'simple'     => 'Simple',
-            'nested.one' => 'First',
-            'nested.two' => 'Second',
-        ];
         $this->laravelLoader->shouldReceive('load')->with('en', 'group', 'name')->andReturn($data);
-        $this->assertEquals($expected, $this->fileLoader->loadSource('en', 'group', 'name'));
+        $this->assertEquals($data, $this->fileLoader->loadSource('en', 'group', 'name'));
     }
 }

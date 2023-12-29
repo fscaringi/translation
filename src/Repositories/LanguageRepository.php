@@ -1,6 +1,8 @@
 <?php namespace Waavi\Translation\Repositories;
 
 use Illuminate\Config\Repository as Config;
+use Illuminate\Foundation\Application;
+use Illuminate\Support\Arr;
 use Illuminate\Validation\Factory as Validator;
 use Waavi\Translation\Models\Language;
 
@@ -54,10 +56,11 @@ class LanguageRepository extends Repository
      *  @param  \Illuminate\Validation\Validator        $validator  Validator factory
      *  @return void
      */
-    public function __construct(Language $model, Validator $validator, Config $config)
+    public function __construct(Language $model, Application $app)
     {
         $this->model                   = $model;
-        $this->validator               = $validator;
+        $this->validator               = $app['validator'];
+        $config                        = $app['config'];
         $this->defaultLocale           = $config->get('app.locale');
         $this->defaultAvailableLocales = $config->get('translator.available_locales', []);
         $this->config                  = $config;
@@ -127,11 +130,15 @@ class LanguageRepository extends Repository
         if ($this->config->has('translator.locales')) {
             return $this->config->get('translator.locales');
         }
-        if ($this->tableExists()) {
-            $locales = $this->model->distinct()->get()->lists('locale')->toArray();
-            $this->config->set('translator.locales', $locales);
-            return $locales;
+
+        if ($this->config->get('translator.source') !== 'files') {
+            if ($this->tableExists()) {
+                $locales = $this->model->distinct()->get()->pluck('locale')->toArray();
+                $this->config->set('translator.locales', $locales);
+                return $locales;
+            }
         }
+
         return $this->defaultAvailableLocales;
     }
 
@@ -171,7 +178,7 @@ class LanguageRepository extends Repository
      */
     public function validate(array $attributes)
     {
-        $id    = array_get($attributes, 'id', 'NULL');
+        $id    = Arr::get($attributes, 'id', 'NULL');
         $table = $this->model->getTable();
         $rules = [
             'locale' => "required|unique:{$table},locale,{$id}",

@@ -5,13 +5,13 @@ use Waavi\Translation\Test\TestCase;
 
 class FlushTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->cacheRepository = \App::make('translation.cache.repository');
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         parent::tearDown();
         Mockery::close();
@@ -26,7 +26,7 @@ class FlushTest extends TestCase
         $this->assertTrue($this->cacheRepository->has('en', 'group', 'namespace'));
         $command = Mockery::mock('Waavi\Translation\Commands\CacheFlushCommand[info]', [$this->cacheRepository, false]);
         $command->shouldReceive('info')->with('The translation cache is disabled.')->once();
-        $command->fire();
+        $command->handle();
         $this->assertTrue($this->cacheRepository->has('en', 'group', 'namespace'));
     }
 
@@ -39,7 +39,7 @@ class FlushTest extends TestCase
         $this->assertTrue($this->cacheRepository->has('en', 'group', 'namespace'));
         $command = Mockery::mock('Waavi\Translation\Commands\CacheFlushCommand[info]', [$this->cacheRepository, true]);
         $command->shouldReceive('info')->with('Translation cache cleared.')->once();
-        $command->fire();
+        $command->handle();
         $this->assertFalse($this->cacheRepository->has('en', 'group', 'namespace'));
     }
 }

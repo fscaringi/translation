@@ -12,10 +12,21 @@ return [
     | Supported:
     |
     |   'mixed'         Both files and the database are queried for language entries, with files taking priority.
+    |   'mixed_db'      Both files and the database are queried for language entries, with database taking priority.
     |   'database'      Use the database as the exclusive source for language entries.
     |   'files'         Use files as the exclusive source for language entries [Laravel's default].
      */
-    'source'            => env('TRANSLATION_SOURCE', 'mixed'),
+    'source'            => env('TRANSLATION_SOURCE', 'files'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Default Translation Connection
+    |--------------------------------------------------------------------------
+    |
+    | This option controls the translation's connection. By default is use Laravel default connection. In most cases
+    | you don't need to change it.
+     */
+    'connection'        => config('database.default', env('TRANSLATOR_CONNECTION', 'mysql')),
 
     // In case the files source is selected, please enter here the supported locales for your app.
     // Ex: ['en', 'es', 'fr']

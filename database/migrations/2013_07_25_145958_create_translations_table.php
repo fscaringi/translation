@@ -12,7 +12,7 @@ class CreateTranslationsTable extends Migration
      */
     public function up()
     {
-        Schema::create('translator_translations', function ($table) {
+        Schema::connection(config('translator.connection'))->create('translator_translations', function ($table) {
             $table->increments('id');
             $table->string('locale', 6);
             $table->string('namespace', 150)->default('*');
@@ -34,7 +34,6 @@ class CreateTranslationsTable extends Migration
      */
     public function down()
     {
-        Schema::drop('language_entries');
+        Schema::drop('translator_translations');
     }
-
 }

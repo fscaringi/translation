@@ -1,9 +1,8 @@
 <?php namespace Waavi\Translation\Loaders;
 
 use Illuminate\Translation\FileLoader as LaravelFileLoader;
-use Illuminate\Translation\LoaderInterface;
 
-class FileLoader extends Loader implements LoaderInterface
+class FileLoader extends Loader
 {
     /**
      * The default locale.
@@ -42,7 +41,7 @@ class FileLoader extends Loader implements LoaderInterface
      */
     public function loadSource($locale, $group, $namespace = '*')
     {
-        return array_dot($this->laravelFileLoader->load($locale, $group, $namespace));
+        return $this->laravelFileLoader->load($locale, $group, $namespace);
     }
 
     /**
@@ -56,5 +55,26 @@ class FileLoader extends Loader implements LoaderInterface
     {
         $this->hints[$namespace] = $hint;
         $this->laravelFileLoader->addNamespace($namespace, $hint);
+    }
+
+    /**
+     * Add a new JSON path to the loader.
+     *
+     * @param  string  $path
+     * @return void
+     */
+    public function addJsonPath($path)
+    {
+        $this->laravelFileLoader->addJsonPath($path);
+    }
+
+    /**
+     * Get an array of all the registered namespaces.
+     *
+     * @return array
+     */
+    public function namespaces()
+    {
+        return $this->hints;
     }
 }
